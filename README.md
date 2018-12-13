@@ -3,7 +3,7 @@
 
 Surgical bed that can track a point on the subject placed on the operating table and move accordingly.
 
-## Motors
+## Motors and Motor Controllers
 
 
 The basic mechanics for the XY motors came from a kit
@@ -42,9 +42,39 @@ Now looking down the other side of the A4988 module:
 * MS1, MS2, MS3 – These three connections determine the microstepping mode of the A4988 module. By setting the logic levels here you can set the motor to Full, Half, Quarter, Eighth, Sixteenth steps.
 	We set these to Quarter by setting them to (low, high, low).  
 * RESET Bar – This is an active low line that will reset the module. This must be
-	 pulled high. it is pulled high.
-SLEEP – If this line is set low the module will enter a low-powered sleep mode and consume minimal current. By tying this line to the Reset pin the module will always be on at full power consumption.
-STEP – This is how you drive the motor from an external microcontroller or square wave oscillator. Each pulse sent here steps the motor by whatever number of steps or microsteps that has been set by MS1, MS2 and MS3 settings. The faster you pulse this the faster the motor will travel.
-DIR – The direction control A high input here drives the motor clockwise, a low will drive it counterclockwise.
+	 pulled high. 
+* SLEEP Bar – If this line is set low the module will enter a low-powered sleep mode
+		and consume minimal current. This was set to High.
+* STEP – This is how you drive the motor from an external microcontroller or square wave oscillator. 
+	Each pulse sent here steps the motor by whatever number of steps or microsteps that has been set 
+	by MS1, MS2 and MS3 settings. The faster you pulse this the faster the motor
+	will travel. Set to a GPIO pin on the rasberry pi.
+* DIR – The direction control A high input here drives the motor clockwise, a low
+ 	will drive it counterclockwise. Again set by the GPIO pins on the rasberry Pi
 
 
+In order to get the motors to turn reliably one had to be careful about the grounds
+and avoid ground loops.  What worked was to connect VMOT and GND (motor) to one
+supply.  Each motor drew some 0.5 A, so we found that using a supply that can source
+more than one amp at 8 V was critical. VMOT and GND (Motor) were connected directly
+to the +/- leads of the supply, without connecting to GND of the supply. A separate 5V supply powered the logic and the
+drivers and was connected across VDD and GND (+/- leads, again not connecting GND of
+the supply). The rasberry pi also has a
+ground and that ground was connected straight to the digital GND here. That meant that Pi pulses
+were interpreted correctly.  Since the Pi has a connection to universal GND, and since the
+driver connects the power gnd to Gnd through a resistor,  neither supply was
+directly grounded.  In fact doing so created a ground loop and the current did not
+all go where it should, causing the motors to be unreliable.
+
+Another important point was to tie SLEEP Bar, RESET Bar High and ENABLE BAR low.  If
+this was not done the motors also did not work. We found leaving them floating
+produced unreliable turning.
+
+For the other motor, we used the MakeBlock driver which was also based on the A4988.
+In that board MS1, MS2, MS3 were set with toggles and that board had SLEEP, RESET,
+and ENABLE, not the active low versions.  Those lines then were set as (LOW, LOW, and
+HIGH) and needed to be set in order to drive the motors (not floated).
+
+
+Full steps work but quarter steps (with some 0.0005 sec/step) produced really smooth
+motor trajectories.
