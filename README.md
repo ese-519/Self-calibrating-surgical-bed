@@ -20,7 +20,7 @@ here)
 
 The schematic that we used was the A4988 driver module (A4988 Stepper Motor Driver
 Module, Red PCB with Heat Sink for CNC 3D Printer RepRap StepSticknd) and was wired as follows:
-![](CircuitDiagram.png)
+![](circuitDiagram.PNG)
 
 
 
