@@ -24,7 +24,8 @@ Module, Red PCB with Heat Sink for CNC 3D Printer RepRap StepSticknd) and was wi
 
 Starting from the top right and working down we see the following pins:
 
-* VMOT – The motor DC supply voltage (positive). The maximum voltage is 35 volts.
+* VMOT – The motor DC supply voltage (positive). The maximum voltage is 35 volts. We
+	used 8 V and connected a 100 \microF capacitor across the terminals. 
 * GND  (Motor) – The motor supply voltage ground.  This was connected straight to the negative
 	voltage supply.
 * 2B, 2A – The connections to coil 2 of the bipolar stepper motor.
